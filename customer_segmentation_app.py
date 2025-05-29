@@ -1,6 +1,58 @@
-import gradio as gr
+import streamlit as st
 
-# Prediction function with 4 customer segments
+# Page configuration
+st.set_page_config(page_title="Customer Segmentation App", layout="centered")
+
+# Custom CSS: cleaner, modern style
+st.markdown("""
+    <style>
+    .stButton>button {
+        background-color: #6e00ff;
+        color: white;
+        font-weight: 600;
+        padding: 10px 20px;
+        font-size: 15px;
+        border: none;
+        border-radius: 8px;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #5800cc;
+    }
+
+    h1, h2, h3, label {
+        font-family: 'Segoe UI', sans-serif;
+        color: #dddddd;
+    }
+
+    .result-box {
+        font-size: 18px;
+        font-weight: 600;
+        color: #ffffff;
+        background-color: #222;
+        border-left: 5px solid #6e00ff;
+        padding: 15px;
+        border-radius: 6px;
+        margin-top: 20px;
+    }
+
+    .stApp {
+        background-color: #111;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# App title
+st.markdown("<h1 style='text-align: center;'>Customer Segmentation App</h1>", unsafe_allow_html=True)
+st.markdown("### 🔍 Adjust the RFM values to see which segment your customer belongs to.")
+
+# Sliders
+recency = st.slider("📅 Recency (days since last purchase)", 0, 100, 50)
+frequency = st.slider("🔁 Frequency (purchase count)", 0, 100, 50)
+monetary = st.slider("💵 Monetary (total spend in $)", 0, 2000, 1000)
+
+# Prediction function
 def predict_customer(recency, frequency, monetary):
     score = recency * 0.5 + frequency * 0.3 + monetary * 0.2
     if score < 20:
@@ -12,61 +64,7 @@ def predict_customer(recency, frequency, monetary):
     else:
         return "🌟 High-Value Customer"
 
-# Custom futuristic CSS
-css = """
-.gr-button {
-    background: linear-gradient(90deg, #6e00ff, #00e0ff);
-    color: #fff;
-    font-weight: bold;
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-size: 16px;
-    box-shadow: 0 0 10px rgba(110, 0, 255, 0.8);
-    transition: 0.4s ease;
-}
-.gr-button:hover {
-    background: linear-gradient(270deg, #00e0ff, #6e00ff);
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 224, 255, 1);
-}
-
-h1, h2, h3, .gr-textbox label, .gr-slider label {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #ffffff;
-    text-shadow: 0 0 5px rgba(0, 255, 255, 0.6);
-}
-
-.output-textbox {
-    font-size: 20px;
-    font-weight: bold;
-    color: #00ffff;
-    border: 2px solid #00ffff;
-    padding: 12px;
-    border-radius: 10px;
-    background-color: #1a1a1a;
-}
-
-body {
-    background-color: #111;
-}
-"""
-
-# Build the app
-with gr.Blocks(css=css, theme=gr.themes.Soft()) as demo:
-    gr.Markdown("<h1 style='text-align: center;'>Customer Segmentation App</h1>")
-    gr.Markdown("### 🔍 Adjust the RFM values to see which segment your customer belongs to.")
-
-    with gr.Row():
-        recency = gr.Slider(minimum=0, maximum=100, label="📅 Recency (days since last purchase)")
-    with gr.Row():
-        frequency = gr.Slider(minimum=0, maximum=100, label="🔁 Frequency (purchase count)")
-    with gr.Row():
-        monetary = gr.Slider(minimum=0, maximum=2000, label="💵 Monetary (total spend in $)")
-
-    predict_btn = gr.Button("🔮 Predict Customer Segment")
-    output = gr.Textbox(label="🎯 Prediction Result", elem_classes="output-textbox")
-
-    predict_btn.click(fn=predict_customer, inputs=[recency, frequency, monetary], outputs=output)
-
-# Launch the app locally
-demo.launch()
+# Button + Output
+if st.button("🔮 Predict Customer Segment"):
+    result = predict_customer(recency, frequency, monetary)
+    st.markdown(f"<div class='result-box'>{result}</div>", unsafe_allow_html=True)
